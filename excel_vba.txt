@@ -1,0 +1,59 @@
+Sub UpdateStatusAndComment()
+    Dim finalSheet As Worksheet
+    Dim sheet8Sheet As Worksheet
+    Dim sheet8nSheet As Worksheet
+    Dim lastRow As Long
+    Dim i As Long
+    Dim lookupValue As Variant
+    Dim statussheet8 As Variant
+    Dim comment1sheet8 As Variant
+    Dim statussheet8n As Variant
+    Dim comment1sheet8n As Variant
+    
+    ' Define the sheets
+    Set finalSheet = ThisWorkbook.Sheets("final")
+    Set sheet8Sheet = ThisWorkbook.Sheets("sheet8")
+    Set sheet8nSheet = ThisWorkbook.Sheets("sheet8n")
+    
+    ' Find the last row in final sheet
+    lastRow = finalSheet.Cells(finalSheet.Rows.Count, "A").End(xlUp).Row
+    
+    ' Loop through each row in final sheet
+    For i = 2 To lastRow ' Assuming row 1 is header
+        lookupValue = finalSheet.Cells(i, 1).Value  ' ID in column A
+        
+        ' Look up status and comment in sheet8 sheet
+        On Error Resume Next
+        statussheet8 = Application.VLookup(lookupValue, sheet8Sheet.Range("A:C"), 2, False)
+        comment1sheet8 = Application.VLookup(lookupValue, sheet8Sheet.Range("A:C"), 3, False)
+        On Error GoTo 0
+        
+        ' If not found in sheet8 sheet, look up in sheet8n sheet
+        If IsError(statussheet8) Then
+            On Error Resume Next
+            statussheet8n = Application.VLookup(lookupValue, sheet8nSheet.Range("A:C"), 2, False)
+            comment1sheet8n = Application.VLookup(lookupValue, sheet8nSheet.Range("A:C"), 3, False)
+            On Error GoTo 0
+            
+            ' If found in sheet8n sheet
+            If Not IsError(statussheet8n) Then
+                finalSheet.Cells(i, 2).Value = statussheet8n  ' Update STATUS in column A
+                finalSheet.Cells(i, 3).Value = comment1sheet8n ' Update COMMENT in column B
+            End If
+        Else
+            ' If found in sheet8 sheet
+            finalSheet.Cells(i, 2).Value = statussheet8  ' Update STATUS in column A
+            finalSheet.Cells(i, 3).Value = comment1sheet8 ' Update COMMENT in column B
+        End If
+    Next i
+    
+    ' Clean up
+    Set finalSheet = Nothing
+    Set sheet8Sheet = Nothing
+    Set sheet8nSheet = Nothing
+End Sub
+
+
+
+
+=IF(ISERROR(VLOOKUP(A2, 'sheet8'!$A:$C, 2, FALSE)), IFERROR(VLOOKUP(A2, sheet8N!$A:$C, 2, FALSE), ""), VLOOKUP(A2, 'sheet8'!$A:$C, 2, FALSE))
