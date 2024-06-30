@@ -1,0 +1,1 @@
+for /f %%i in ('powershell -Command "Get-Date ((Get-Date).AddDays(-1)) -Format yyyyMMdd"') do set foldername=%%i
