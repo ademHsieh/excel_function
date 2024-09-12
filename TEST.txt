@@ -1,0 +1,96 @@
+AVERAGEIF(DATA!C:C, A2, DATA!B:B)
+
+TEXT(VLOOKUP(A2, DATA!C:D, 2, FALSE), "yyyy/m/d")
+
+
+Sub AUTO_3()
+'
+' AUTO_3 巨集
+'
+
+'
+    Sheets("DATA").Select
+    Columns("C:C").Select
+    Selection.Copy
+    Sheets("巨集").Select
+    ActiveSheet.Paste
+    Application.CutCopyMode = False
+    ActiveSheet.Range("$A$1:$A$25").RemoveDuplicates Columns:=1, Header:=xlNo
+    Range("B1").Select
+    ActiveCell.FormulaR1C1 = "THK"
+    Range("C1").Select
+    ActiveCell.FormulaR1C1 = "DATE"
+    Range("B2").Select
+    ActiveCell.FormulaR1C1 = "=AVERAGEIF(DATA!C[1],RC[-1],DATA!C)"
+    Range("B2").Select
+    Selection.AutoFill Destination:=Range("B2:B7")
+    Range("B2:B7").Select
+    Range("C2").Select
+    ActiveCell.FormulaR1C1 = _
+        "=TEXT(VLOOKUP(RC[-2],DATA!C:C[1],2,FALSE),""yyyy/m/d"")"
+    Selection.AutoFill Destination:=Range("C2:C7")
+'    -----------------------------------------------
+    Range("A1:C1").Select
+    Selection.AutoFilter
+    ActiveWorkbook.Worksheets("巨集").AutoFilter.Sort.SortFields.Clear
+    ActiveWorkbook.Worksheets("巨集").AutoFilter.Sort.SortFields.Add2 Key:=Range( _
+        "C1"), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:= _
+        xlSortNormal
+    With ActiveWorkbook.Worksheets("巨集").AutoFilter.Sort
+        .Header = xlYes
+        .MatchCase = False
+        .Orientation = xlTopToBottom
+        .SortMethod = xlPinYin
+        .Apply
+    End With
+    Range("B2:B7").Select
+    ActiveSheet.Shapes.AddChart2(227, xlLine).Select
+    ActiveChart.SetSourceData Source:=Range("巨集!$B$2:$B$7")
+    ActiveChart.ChartArea.Select
+    ActiveChart.Axes(xlCategory).Select
+    Application.CutCopyMode = False
+    Application.CutCopyMode = False
+    ActiveChart.FullSeriesCollection(1).XValues = "=巨集!$C$2:$C$7"
+    ActiveChart.ChartTitle.Select
+    ActiveChart.ChartTitle.Text = "THK VS DATE"
+    Selection.Format.TextFrame2.TextRange.Characters.Text = "THK VS DATE"
+    With Selection.Format.TextFrame2.TextRange.Characters(1, 11).ParagraphFormat
+        .TextDirection = msoTextDirectionLeftToRight
+        .Alignment = msoAlignCenter
+    End With
+    With Selection.Format.TextFrame2.TextRange.Characters(1, 6).Font
+        .BaselineOffset = 0
+        .Bold = msoFalse
+        .NameComplexScript = "+mn-cs"
+        .NameFarEast = "+mn-ea"
+        .Fill.Visible = msoTrue
+        .Fill.ForeColor.RGB = RGB(89, 89, 89)
+        .Fill.Transparency = 0
+        .Fill.Solid
+        .Size = 14
+        .Italic = msoFalse
+        .Kerning = 12
+        .Name = "+mn-lt"
+        .UnderlineStyle = msoNoUnderline
+        .Spacing = 0
+        .Strike = msoNoStrike
+    End With
+    With Selection.Format.TextFrame2.TextRange.Characters(7, 5).Font
+        .BaselineOffset = 0
+        .Bold = msoFalse
+        .NameComplexScript = "+mn-cs"
+        .NameFarEast = "+mn-ea"
+        .Fill.Visible = msoTrue
+        .Fill.ForeColor.RGB = RGB(89, 89, 89)
+        .Fill.Transparency = 0
+        .Fill.Solid
+        .Size = 14
+        .Italic = msoFalse
+        .Kerning = 12
+        .Name = "+mn-lt"
+        .UnderlineStyle = msoNoUnderline
+        .Spacing = 0
+        .Strike = msoNoStrike
+    End With
+    Range("L14").Select
+End Sub
